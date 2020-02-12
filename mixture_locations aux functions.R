@@ -80,3 +80,36 @@ sample.z=function(log.theta,log.psi,ntot,log.p.new.group,z,ngroup,
   }
   z
 }
+#------------------------------
+get.log.likel=function(log.theta,log.psi,ntot,ngroup,dat1,nquest,loc.id,nmax.group){
+  prob=rep(NA,ntot)
+  for (i in 1:ntot){
+    tmp=matrix(NA,nmax.group,nquest)
+    for (j in 1:nquest){
+      ind=dat1[i,j]
+      tmp[,j]=log.psi[[j]][,ind]
+    }
+    tmp1=rowSums(tmp)+log.theta[loc.id[i],]
+    prob[i]=sum(exp(tmp1))
+  }
+  sum(log(prob))
+}
+#------------------------------
+summary.param=function(mod,nloc,nmax.group,nburn,ngibbs,nquest.cat,nquest){
+  ind=nburn:ngibbs
+  tmp=colMeans(mod$theta[ind,])
+  theta=matrix(tmp,nloc,nmax.group)
+  rownames(theta)=paste0('loc',1:nloc)
+  colnames(theta)=paste0('group',1:nmax.group)
+  
+  tmp=colMeans(mod$psi[ind,])
+  psi=matrix(tmp,nmax.group,sum(nquest.cat))
+  rownames(psi)=paste0('group',1:nmax.group)
+  
+  nome1=paste0('quest',rep(1:nquest,times=nquest.cat))
+  nome2=numeric()
+  for (i in 1:nquest) nome2=c(nome2,1:nquest.cat[i])
+  colnames(psi)=paste0(nome1,'.',nome2)
+  
+  list(theta=theta,psi=psi)
+}

@@ -24,6 +24,7 @@ mixture_locations=function(dat1,nmax.group,loc.id,gamma1,alpha,ngibbs){
   store.z=matrix(NA,ngibbs,ntot)
   store.theta=matrix(NA,ngibbs,ngroup*nloc)
   store.psi=matrix(NA,ngibbs,ngroup*sum(nquest.cat))
+  store.loglikel=matrix(NA,ngibbs,1)
   reorder1=50
   
   #run gibbs sampler
@@ -69,10 +70,17 @@ mixture_locations=function(dat1,nmax.group,loc.id,gamma1,alpha,ngibbs){
                ntot=ntot,log.p.new.group=log.p.new.group,z=z,ngroup=ngroup,
                loc.id=loc.id,nquest=nquest,dat1=dat1)
     
+    #get log-likelihood
+    log.likel=get.log.likel(log.theta=log.theta,log.psi=log.psi,
+                            ntot=ntot,ngroup=ngroup,dat1=dat1,nquest=nquest,
+                            loc.id=loc.id,nmax.group=nmax.group)
+    
     #store results
     store.z[i,]=z
     store.theta[i,]=theta
     store.psi[i,]=unlist(psi)
+    store.loglikel[i]=log.likel
   }
-  list(z=store.z,theta=store.theta,psi=store.psi)
+  list(z=store.z,theta=store.theta,psi=store.psi,
+       loglikel=store.loglikel)
 }

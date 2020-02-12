@@ -25,3 +25,14 @@ ngibbs=1000
 mod=mixture_locations(dat1=dat1,nmax.group=nmax.group,loc.id=loc.id,
                       gamma1=gamma1,alpha=alpha,ngibbs=ngibbs)
 
+#check convergence: plot loglikelihood
+plot(mod$loglikel,type='l')
+
+#check parameters
+nburn=ngibbs*9/10
+res=summary.param(mod=mod,nloc=nloc,nmax.group=nmax.group,
+                  nburn=nburn,ngibbs=ngibbs,
+                  nquest.cat=apply(dat1,2,max),nquest=ncol(dat1))
+theta.estim=res$theta
+psi.estim=res$psi
+boxplot(theta.estim,las=2)
